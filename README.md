@@ -1,4 +1,4 @@
 pycon-workshop
 ==============
 
-PyCon 2014 Workshop
+Example code for the Rackspace workshop at PyCon 2014.
