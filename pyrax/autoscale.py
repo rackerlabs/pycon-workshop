@@ -39,10 +39,13 @@ def create_scaling_group(args):
         print br.message
 
     # Set a policy web hook that Cloud Monitoring can call
-    group.add_policy("my-policy",
+    policy = group.add_policy("my-policy",
                      "webhook", # Type of policy
                      60, # Number of seconds to cooldown before processing more
                      1) # Positive change, so we'll scale *up*
+
+    # Add a web hook to the policy.
+    hook = policy.add_webhook("thehook")
 
 def execute_policy(args):
     """Execute a scaling policy."""

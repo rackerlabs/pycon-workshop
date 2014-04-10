@@ -7,7 +7,7 @@ import sys
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
-pyrax.set_credential_file(os.path.expanduser("~/.pyraxtestcreds"))
+pyrax.set_credential_file(os.path.expanduser("~/.pyraxcreds"))
 
 cm = pyrax.cloud_monitoring
 auto = pyrax.autoscale
@@ -53,14 +53,13 @@ def create_email_notification(args):
     # Create an alarm that will cause a critical state to be reached
     # if our HTTP GET check returns a 500 status code.
     alarm = cm.create_alarm(entity, check, plan,
-     "if (metric[\"code\"] == \"500\") { return new AlarmStatus(CRITICAL); }")
+     "if (metric[\"code\"] == \"111\") { return new AlarmStatus(CRITICAL); }")
 
 
 def create_webhook_notification(args):
     """Create a webhook notification."""
 
-    # Get the entity that we already created.
-    entity = cm.list_entities()[0]
+    entity = get_entity(args.ip)
 
     # Create a check on our entity.
     # This will do an HTTP GET request on the API every 60 seconds with
@@ -87,9 +86,10 @@ def create_webhook_notification(args):
     email = cm.create_notification("email", label="my-email",
             details={"address": "brian@python.org"})
 
+
     # Create a web hook notification with the HREF link in the hook.
     webhook = cm.create_notification("webhook", label="my-webhook",
-            details={"url": hook.links[0]["href"]})
+            details={"url": hook.links[1]["href"]})
 
     # Create another notification plan which will call our hook
     plan = cm.create_notification_plan("my-webhook", ok_state=email,
@@ -97,7 +97,7 @@ def create_webhook_notification(args):
 
     # Create an alarm
     alarm = cm.create_alarm(entity, check, plan,
-     "if (metric[\"code\"] == \"500\") { return new AlarmStatus(CRITICAL); }")
+     "if (metric[\"code\"] == \"111\") { return new AlarmStatus(CRITICAL); }")
 
 def _main():
     parser = argparse.ArgumentParser()
